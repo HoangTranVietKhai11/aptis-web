@@ -1,0 +1,91 @@
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+
+process.on('uncaughtException', (err) => {
+  console.error('FATAL UNCAUGHT EXCEPTION:', err);
+});
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('FATAL UNHANDLED REJECTION:', reason);
+});
+
+const { initDatabase } = require('./database/init');
+const { seedDatabase } = require('./database/seed');
+
+const practiceRoutes = require('./routes/practice');
+const mocktestRoutes = require('./routes/mocktest');
+const vocabularyRoutes = require('./routes/vocabulary');
+const progressRoutes = require('./routes/progress');
+const roadmapRoutes = require('./routes/roadmap');
+const gamificationRoutes = require('./routes/gamification');
+const aiRoutes = require('./routes/ai');
+const importRoutes = require('./routes/import');
+const authRoutes = require('./routes/auth');
+const adminRoutes = require('./routes/admin');
+
+const app = express();
+const PORT = process.env.PORT || 3003;
+
+app.use(cors());
+app.use(express.json());
+
+// Initialize DB
+const db = initDatabase();
+seedDatabase(db);
+
+// Identifiable header & logger
+app.use((req, res, next) => {
+  res.setHeader('X-Backend-Id', 'APTIS-B2-NEW');
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
+// Make db available to routes
+app.use((req, res, next) => {
+  if (!db) console.error('DATABASE OBJECT IS NULL!');
+  req.db = db;
+  next();
+});
+
+// Test route
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Backend is reachable', timestamp: new Date().toISOString() });
+});
+
+// Static files for Frontend Production Build
+const frontendPath = path.join(__dirname, '../frontend/dist');
+app.use(express.static(frontendPath));
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/practice', practiceRoutes);
+app.use('/api/mocktest', mocktestRoutes);
+app.use('/api/vocabulary', vocabularyRoutes);
+app.use('/api/progress', progressRoutes);
+app.use('/api/roadmap', roadmapRoutes);
+app.use('/api/gamification', gamificationRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/import', importRoutes);
+
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// SPA Catch-all (Must be after all API routes)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('GLOBAL ERROR:', err);
+  res.status(500).json({ error: 'Server error: ' + err.message });
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 APTIS Backend running on port ${PORT}`);
+  console.log(`🔗 Local: http://localhost:${PORT}`);
+});
