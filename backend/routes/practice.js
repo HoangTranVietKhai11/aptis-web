@@ -1,56 +1,68 @@
 const express = require('express');
 const router = express.Router();
+const { analyzeResponse } = require('../services/ai');
+const { updateDailyStreak } = require('../services/streaks');
+const { rewardXP } = require('../services/gamification');
 
 // GET /api/practice?skill=grammar&limit=10
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const { skill, difficulty, limit = 10 } = req.query;
   let query = 'SELECT * FROM practice_questions';
   const conditions = [];
-  const params = [];
+  const queryParams = [];
 
   if (skill) {
     if (skill.startsWith('grammar_')) {
-      conditions.push('skill = ?');
-      params.push('grammar');
-      conditions.push('explanation LIKE ?');
-      params.push('%[' + skill + ']%');
+      conditions.push('skill = $1');
+      queryParams.push('grammar');
+      conditions.push('explanation LIKE $2');
+      queryParams.push('%[' + skill + ']%');
     } else {
-      conditions.push('skill = ?');
-      params.push(skill);
+      conditions.push('skill = $1');
+      queryParams.push(skill);
     }
   }
+  
+  const difficultyIdx = queryParams.length + 1;
   if (difficulty) {
-    conditions.push('difficulty = ?');
-    params.push(difficulty);
+    conditions.push(`difficulty = $${difficultyIdx}`);
+    queryParams.push(difficulty);
   }
 
   if (conditions.length > 0) {
     query += ' WHERE ' + conditions.join(' AND ');
   }
 
-  query += ' ORDER BY RANDOM() LIMIT ?';
-  params.push(Number(limit));
+  const limitIdx = queryParams.length + 1;
+  query += ` ORDER BY RANDOM() LIMIT $${limitIdx}`;
+  queryParams.push(Number(limit));
 
-  const questions = req.db.prepare(query).all(...params);
-  // Parse options JSON
-  const parsed = questions.map(q => ({
-    ...q,
-    options: q.options ? JSON.parse(q.options) : null
-  }));
-  res.json(parsed);
+  try {
+    const result = await req.db.query(query, queryParams);
+    const questions = result.rows;
+    
+    // Parse options JSON
+    const parsed = questions.map(q => ({
+      ...q,
+      options: q.options ? (typeof q.options === 'string' ? JSON.parse(q.options) : q.options) : null
+    }));
+    res.json(parsed);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // GET /api/practice/skills
-router.get('/skills', (req, res) => {
-  const skills = req.db.prepare(
-    'SELECT skill, COUNT(*) as count FROM practice_questions GROUP BY skill'
-  ).all();
-  res.json(skills);
+router.get('/skills', async (req, res) => {
+  try {
+    const result = await req.db.query(
+      'SELECT skill, COUNT(*) as count FROM practice_questions GROUP BY skill'
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
-
-const { analyzeResponse } = require('../services/ai');
-const { updateDailyStreak } = require('../services/streaks');
-const { rewardXP } = require('../services/gamification');
 
 // POST /api/practice/answer
 router.post('/answer', async (req, res) => {
@@ -60,7 +72,8 @@ router.post('/answer', async (req, res) => {
       return res.status(400).json({ error: 'question_id and answer are required' });
     }
 
-    const question = req.db.prepare('SELECT * FROM practice_questions WHERE id = ?').get(question_id);
+    const qResult = await req.db.query('SELECT * FROM practice_questions WHERE id = $1', [question_id]);
+    const question = qResult.rows[0];
     if (!question) return res.status(404).json({ error: 'Question not found' });
 
     let is_correct = question.correct_answer ? (answer === question.correct_answer ? 1 : 0) : null;
@@ -76,39 +89,45 @@ router.post('/answer', async (req, res) => {
         is_correct = score >= 35 ? 1 : 0;
       } catch (aiErr) {
         console.error('AI Practice Error:', aiErr);
-        // Fallback already handled inside analyzeResponse mostly, but just in case
       }
     }
 
     // Reward XP
     let xpEarned = 0;
     try {
-      xpEarned = is_correct === 1 ? rewardXP(req.db, 'PRACTICE_CORRECT') : rewardXP(req.db, 'PRACTICE_ATTEMPT');
+      xpEarned = is_correct === 1 
+        ? await rewardXP(req.db, 'PRACTICE_CORRECT') 
+        : await rewardXP(req.db, 'PRACTICE_ATTEMPT');
     } catch (xpErr) { console.error('XP Error:', xpErr); }
 
-    req.db.prepare(
-      'INSERT INTO user_answers (question_id, answer, is_correct, score, ai_feedback) VALUES (?, ?, ?, ?, ?)'
-    ).run(question_id, answer, is_correct, score, ai_feedback);
+    await req.db.query(
+      'INSERT INTO user_answers (question_id, answer, is_correct, score, ai_feedback) VALUES ($1, $2, $3, $4, $5)',
+      [question_id, answer, is_correct, score, ai_feedback]
+    );
 
     // Update Daily Streak
     try {
-      updateDailyStreak(req.db);
+      await updateDailyStreak(req.db);
     } catch (streakErr) { console.error('Streak Error:', streakErr); }
 
     // Update progress
     const today = new Date().toISOString().split('T')[0];
-    const existing = req.db.prepare(
-      'SELECT * FROM progress WHERE skill = ? AND session_date = ?'
-    ).get(question.skill, today);
+    const progResult = await req.db.query(
+      'SELECT * FROM progress WHERE skill = $1 AND session_date = $2',
+      [question.skill, today]
+    );
+    const existing = progResult.rows[0];
 
     if (existing) {
-      req.db.prepare(
-        'UPDATE progress SET total_questions = total_questions + 1, correct_answers = correct_answers + COALESCE(?, 0) WHERE id = ?'
-      ).run(is_correct, existing.id);
+      await req.db.query(
+        'UPDATE progress SET total_questions = total_questions + 1, correct_answers = correct_answers + COALESCE($1, 0) WHERE id = $2',
+        [is_correct, existing.id]
+      );
     } else {
-      req.db.prepare(
-        'INSERT INTO progress (skill, total_questions, correct_answers, session_date) VALUES (?, 1, COALESCE(?, 0), ?)'
-      ).run(question.skill, is_correct, today);
+      await req.db.query(
+        'INSERT INTO progress (skill, total_questions, correct_answers, session_date) VALUES ($1, 1, COALESCE($2, 0), $3)',
+        [question.skill, is_correct, today]
+      );
     }
 
     res.json({
@@ -122,7 +141,7 @@ router.post('/answer', async (req, res) => {
     });
   } catch (err) {
     console.error('Fatal Answer Error:', err);
-    res.status(500).json({ error: 'Internal server error occurred while processing your answer.' });
+    res.status(500).json({ error: err.message });
   }
 });
 

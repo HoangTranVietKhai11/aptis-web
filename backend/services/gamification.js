@@ -15,19 +15,22 @@ const XP_REWARDS = {
 };
 
 /**
- * Adds XP to a user (currently defaults to first user in simple setup).
- * @param {Object} db Database instance.
+ * Adds XP to a user.
+ * @param {Object} db Database pool or client.
  * @param {string} activity Key from XP_REWARDS.
  */
-function rewardXP(db, activity) {
+async function rewardXP(db, activity) {
   const amount = XP_REWARDS[activity] || 0;
-  if (amount === 0) return;
+  if (amount === 0) return 0;
 
-  // In this single-user focused app, we update the main user (first one)
-  // or the one currently active. We'll target the 'user' role for now.
-  db.prepare("UPDATE users SET xp = xp + ? WHERE role = 'user'").run(amount);
-  
-  return amount;
+  try {
+    // Target the first user with role 'user' for this simplified setup
+    await db.query("UPDATE users SET xp = xp + $1 WHERE role = 'user'", [amount]);
+    return amount;
+  } catch (err) {
+    console.error('Reward XP Error:', err);
+    return 0;
+  }
 }
 
 /**

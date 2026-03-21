@@ -6,31 +6,40 @@ const { requireAuth, requireAdmin } = require('../middleware/auth');
 router.use(requireAuth, requireAdmin);
 
 // GET /api/admin/users — danh sách tất cả users
-router.get('/users', (req, res) => {
-  const users = req.db.prepare(
-    'SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC'
-  ).all();
-  res.json(users);
+router.get('/users', async (req, res) => {
+  try {
+    const result = await req.db.query(
+      'SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC'
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // DELETE /api/admin/users/:id — xóa user
-router.delete('/users/:id', (req, res) => {
+router.delete('/users/:id', async (req, res) => {
   const { id } = req.params;
 
   if (id === req.user.id) {
     return res.status(400).json({ error: 'Không thể xóa chính mình.' });
   }
 
-  const user = req.db.prepare('SELECT id, role FROM users WHERE id = ?').get(id);
-  if (!user) return res.status(404).json({ error: 'Không tìm thấy người dùng.' });
-  if (user.role === 'admin') return res.status(403).json({ error: 'Không thể xóa tài khoản admin.' });
+  try {
+    const result = await req.db.query('SELECT id, role FROM users WHERE id = $1', [id]);
+    const user = result.rows[0];
+    if (!user) return res.status(404).json({ error: 'Không tìm thấy người dùng.' });
+    if (user.role === 'admin') return res.status(403).json({ error: 'Không thể xóa tài khoản admin.' });
 
-  req.db.prepare('DELETE FROM users WHERE id = ?').run(id);
-  res.json({ success: true });
+    await req.db.query('DELETE FROM users WHERE id = $1', [id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // PATCH /api/admin/users/:id/role — đổi role của user
-router.patch('/users/:id/role', (req, res) => {
+router.patch('/users/:id/role', async (req, res) => {
   const { id } = req.params;
   const { role } = req.body;
 
@@ -41,28 +50,39 @@ router.patch('/users/:id/role', (req, res) => {
     return res.status(400).json({ error: 'Không thể tự thay đổi role của mình.' });
   }
 
-  const user = req.db.prepare('SELECT id FROM users WHERE id = ?').get(id);
-  if (!user) return res.status(404).json({ error: 'Không tìm thấy người dùng.' });
+  try {
+    const result = await req.db.query('SELECT id FROM users WHERE id = $1', [id]);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Không tìm thấy người dùng.' });
 
-  req.db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, id);
-  res.json({ success: true });
+    await req.db.query('UPDATE users SET role = $1 WHERE id = $2', [role, id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // GET /api/admin/stats — thống kê toàn hệ thống
-router.get('/stats', (req, res) => {
-  const totalUsers = req.db.prepare('SELECT COUNT(*) as count FROM users').get().count;
-  const totalQuestions = req.db.prepare('SELECT COUNT(*) as count FROM practice_questions').get().count;
-  const totalAnswers = req.db.prepare('SELECT COUNT(*) as count FROM user_answers').get().count;
-  const totalMockTests = req.db.prepare('SELECT COUNT(*) as count FROM mock_tests').get().count;
-  const correctAnswers = req.db.prepare('SELECT COUNT(*) as count FROM user_answers WHERE is_correct = 1').get().count;
+router.get('/stats', async (req, res) => {
+  try {
+    const uResult = await req.db.query('SELECT COUNT(*) as count FROM users');
+    const qResult = await req.db.query('SELECT COUNT(*) as count FROM practice_questions');
+    const aResult = await req.db.query('SELECT COUNT(*) as count FROM user_answers');
+    const mResult = await req.db.query('SELECT COUNT(*) as count FROM mock_tests');
+    const cResult = await req.db.query('SELECT COUNT(*) as count FROM user_answers WHERE is_correct = 1');
 
-  res.json({
-    total_users: totalUsers,
-    total_questions: totalQuestions,
-    total_answers: totalAnswers,
-    total_mock_tests: totalMockTests,
-    accuracy: totalAnswers > 0 ? Math.round((correctAnswers / totalAnswers) * 100) : 0,
-  });
+    const totalAnswers = parseInt(aResult.rows[0].count);
+    const correctAnswers = parseInt(cResult.rows[0].count);
+
+    res.json({
+      total_users: parseInt(uResult.rows[0].count),
+      total_questions: parseInt(qResult.rows[0].count),
+      total_answers: totalAnswers,
+      total_mock_tests: parseInt(mResult.rows[0].count),
+      accuracy: totalAnswers > 0 ? Math.round((correctAnswers / totalAnswers) * 100) : 0,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

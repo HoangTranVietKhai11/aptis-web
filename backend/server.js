@@ -10,8 +10,9 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('FATAL UNHANDLED REJECTION:', reason);
 });
 
-const { initDatabase } = require('./database/init');
-const { seedDatabase } = require('./database/seed');
+const { initDatabase, pool } = require('./database/init');
+// We will refactor seedDatabase to be async later or skipped for now
+// const { seedDatabase } = require('./database/seed');
 
 const practiceRoutes = require('./routes/practice');
 const mocktestRoutes = require('./routes/mocktest');
@@ -30,62 +31,74 @@ const PORT = process.env.PORT || 3003;
 app.use(cors());
 app.use(express.json());
 
-// Initialize DB
-const db = initDatabase();
-seedDatabase(db);
+// Global logic state
+let dbPool = null;
 
-// Identifiable header & logger
-app.use((req, res, next) => {
-  res.setHeader('X-Backend-Id', 'APTIS-B2-NEW');
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  next();
-});
+// Async init wrapper
+async function startServer() {
+  try {
+    console.log('⏳ Connecting to Supabase...');
+    dbPool = await initDatabase();
+    console.log('✅ Connected to Supabase (PostgreSQL)');
 
-// Make db available to routes
-app.use((req, res, next) => {
-  if (!db) console.error('DATABASE OBJECT IS NULL!');
-  req.db = db;
-  next();
-});
+    // Make db pool available to routes
+    app.use((req, res, next) => {
+      req.db = dbPool;
+      next();
+    });
 
-// Test route
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'Backend is reachable', timestamp: new Date().toISOString() });
-});
+    // Identifiable header & logger
+    app.use((req, res, next) => {
+      res.setHeader('X-Backend-Id', 'APTIS-PRO-CLOUD');
+      console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+      next();
+    });
 
-// Static files for Frontend Production Build
-const frontendPath = path.join(__dirname, '../frontend/dist');
-app.use(express.static(frontendPath));
+    // Test route
+    app.get('/api/test', (req, res) => {
+      res.json({ message: 'Cloud Backend is reachable', status: 'connected' });
+    });
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/practice', practiceRoutes);
-app.use('/api/mocktest', mocktestRoutes);
-app.use('/api/vocabulary', vocabularyRoutes);
-app.use('/api/progress', progressRoutes);
-app.use('/api/roadmap', roadmapRoutes);
-app.use('/api/gamification', gamificationRoutes);
-app.use('/api/ai', aiRoutes);
-app.use('/api/import', importRoutes);
+    // Static files for Frontend Production Build
+    const frontendPath = path.join(__dirname, '../frontend/dist');
+    app.use(express.static(frontendPath));
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
+    // Routes
+    app.use('/api/auth', authRoutes);
+    app.use('/api/admin', adminRoutes);
+    app.use('/api/practice', practiceRoutes);
+    app.use('/api/mocktest', mocktestRoutes);
+    app.use('/api/vocabulary', vocabularyRoutes);
+    app.use('/api/progress', progressRoutes);
+    app.use('/api/roadmap', roadmapRoutes);
+    app.use('/api/gamification', gamificationRoutes);
+    app.use('/api/ai', aiRoutes);
+    app.use('/api/import', importRoutes);
 
-// SPA Catch-all (Must be after all API routes)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(frontendPath, 'index.html'));
-});
+    // Health check
+    app.get('/api/health', (req, res) => {
+      res.json({ status: 'ok', database: 'connected' });
+    });
 
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error('GLOBAL ERROR:', err);
-  res.status(500).json({ error: 'Server error: ' + err.message });
-});
+    // SPA Catch-all
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(frontendPath, 'index.html'));
+    });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 APTIS Backend running on port ${PORT}`);
-  console.log(`🔗 Local: http://localhost:${PORT}`);
-});
+    // Global error handler
+    app.use((err, req, res, next) => {
+      console.error('GLOBAL ERROR:', err);
+      res.status(500).json({ error: 'Server error: ' + err.message });
+    });
+
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 APTIS Cloud Backend running on port ${PORT}`);
+    });
+
+  } catch (err) {
+    console.error('❌ Failed to start server:', err);
+    process.exit(1);
+  }
+}
+
+startServer();
