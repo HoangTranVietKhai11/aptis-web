@@ -1,14 +1,29 @@
 const Groq = require('groq-sdk');
 require('dotenv').config();
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+let groq = null;
 const MODEL = 'llama-3.3-70b-versatile'; // Best free Groq model
+
+function getGroq() {
+  if (!groq) {
+    const apiKey = process.env.GROQ_API_KEY;
+    if (!apiKey) {
+      console.warn('⚠️ [Groq] GROQ_API_KEY is missing! AI features will be disabled.');
+      return null;
+    }
+    groq = new Groq({ apiKey });
+  }
+  return groq;
+}
 
 /**
  * Helper: Call Groq chat completion
  */
 async function callGroq(prompt, maxTokens = 700) {
-  const response = await groq.chat.completions.create({
+  const instance = getGroq();
+  if (!instance) return '';
+
+  const response = await instance.chat.completions.create({
     model: MODEL,
     messages: [{ role: 'user', content: prompt }],
     max_tokens: maxTokens,
