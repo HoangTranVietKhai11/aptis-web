@@ -168,11 +168,11 @@ export default function MockTest() {
   if (view === 'menu') {
     return (
       <div className="animate-fade-in space-y-6">
-        <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+        <h1 className="text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
           <Target className="w-8 h-8 text-red-500" /> Mock Exams
         </h1>
         <div className="flex justify-between items-center mb-6">
-          <p className="text-primary-300">Select a practice module from the table below to begin simulating APTIS tests.</p>
+          <p className="text-slate-600 dark:text-primary-300">Select a practice module from the table below to begin simulating APTIS tests.</p>
           <div className="relative">
             <input 
               type="file" id="pdf-upload" className="hidden" accept="application/pdf"
@@ -225,12 +225,12 @@ export default function MockTest() {
         </div>
 
         {history.filter(t => t.status === 'pending').length > 0 && (
-          <div className="mt-8 border-t border-white/10 pt-8">
-            <h2 className="text-xl font-bold text-white mb-3">Aptis ESOL 2026 Full Mock Exams</h2>
+          <div className="mt-8 border-t border-slate-200 dark:border-white/10 pt-8">
+            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-3">Aptis ESOL 2026 Full Mock Exams</h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {history.filter(t => t.status === 'pending').map(t => (
-                <div key={t.id} className="glass-card p-4 flex flex-col gap-3 border-accent-500/30 bg-accent-500/5 hover:bg-accent-500/10 transition-colors">
-                  <p className="font-bold text-white text-sm">{t.title}</p>
+                <div key={t.id} className="glass-card p-4 flex flex-col gap-3 border-slate-200 dark:border-accent-500/30 bg-white dark:bg-accent-500/5 hover:bg-slate-50 dark:hover:bg-accent-500/10 transition-colors">
+                  <p className="font-bold text-slate-800 dark:text-white text-sm">{t.title}</p>
                   <button onClick={() => { if(window.confirm('Bắt đầu bài thi Full Mock Test?')) startTestById(t.id) }} className="btn-glow bg-accent-600 hover:bg-accent-500 text-white w-full py-2 rounded-lg text-sm font-bold mt-auto">Start Exam</button>
                 </div>
               ))}
@@ -240,15 +240,15 @@ export default function MockTest() {
 
         {history.filter(t => t.status !== 'pending').length > 0 && (
           <div className="mt-8">
-            <h2 className="text-xl font-bold text-white mb-3 text-sm">Past Results</h2>
+            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-3 text-sm">Past Results</h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {history.filter(t => t.status !== 'pending').map(t => (
-                <div key={t.id} className="glass-card p-4 flex items-center justify-between hover:border-white/20 transition-colors">
+                <div key={t.id} className="glass-card p-4 flex items-center justify-between hover:border-slate-300 dark:hover:border-white/20 transition-colors">
                   <div>
-                    <p className="font-medium text-white text-xs">{t.title}</p>
-                    <p className="text-[10px] text-primary-300 flex items-center gap-1 mt-0.5"><Clock className="w-3 h-3" /> {new Date(t.completed_at || t.started_at).toLocaleDateString()}</p>
+                    <p className="font-medium text-slate-800 dark:text-white text-xs">{t.title}</p>
+                    <p className="text-[10px] text-slate-500 dark:text-primary-300 flex items-center gap-1 mt-0.5"><Clock className="w-3 h-3" /> {new Date(t.completed_at || t.started_at).toLocaleDateString()}</p>
                   </div>
-                  <span className={`text-lg font-black ${t.score >= 70 ? 'text-success-400' : 'text-primary-400'}`}>{t.score}%</span>
+                  <span className={`text-lg font-black ${t.score >= 70 ? 'text-emerald-500 dark:text-success-400' : 'text-slate-500 dark:text-primary-400'}`}>{t.score}%</span>
                 </div>
               ))}
             </div>
@@ -261,13 +261,13 @@ export default function MockTest() {
   if (view === 'confirm' && confirming) {
     return (
       <div className="animate-fade-in space-y-6">
-        <button onClick={() => setView('menu')} className="text-primary-300 hover:text-white flex items-center gap-2 font-medium"><ArrowLeft className="w-4 h-4" /> Back</button>
-        <div className="glass-card p-8 text-center max-w-lg mx-auto border-t-4 border-t-primary-500">
-          <h2 className="text-2xl font-bold text-white mb-4">Start Mock Exam?</h2>
-          <p className="text-primary-200 mb-8 text-lg">You are about to begin <strong>Practice Test {confirming.testNum}</strong> for the <strong className="capitalize text-accent-300">{confirming.skill}</strong>.</p>
+        <button onClick={() => setView('menu')} className="text-slate-500 dark:text-primary-300 hover:text-slate-800 dark:hover:text-white flex items-center gap-2 font-medium"><ArrowLeft className="w-4 h-4" /> Back</button>
+        <div className="glass-card p-8 text-center max-w-lg mx-auto border-t-4 border-t-emerald-500 dark:border-t-primary-500">
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-4">Start Mock Exam?</h2>
+          <p className="text-slate-600 dark:text-primary-200 mb-8 text-lg">You are about to begin <strong>Practice Test {confirming.testNum}</strong> for the <strong className="capitalize text-emerald-600 dark:text-accent-300">{confirming.skill}</strong>.</p>
           <div className="flex justify-center gap-4">
-            <button onClick={() => setView('menu')} className="px-6 py-3 rounded-xl font-bold bg-white/10 text-white">Cancel</button>
-            <button onClick={confirmStartTest} disabled={loading} className="btn-glow bg-primary-600 text-white px-8 py-3 rounded-xl font-bold flex gap-2">
+            <button onClick={() => setView('menu')} className="px-6 py-3 rounded-xl font-bold bg-slate-200 hover:bg-slate-300 dark:bg-white/10 text-slate-700 dark:text-white transition-colors">Cancel</button>
+            <button onClick={confirmStartTest} disabled={loading} className="cute-button-primary px-8 py-3 rounded-xl font-bold flex gap-2">
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Rocket className="w-5 h-5" />} Start Test
             </button>
           </div>
@@ -279,14 +279,14 @@ export default function MockTest() {
   if (view === 'results') {
     return (
       <div className="animate-fade-in space-y-8 max-w-4xl mx-auto">
-        <div ref={resultsRef} className="glass-card p-8 text-center space-y-6">
+        <div ref={resultsRef} className="glass-card p-8 text-center space-y-6 bg-white dark:bg-slate-800">
           <Trophy className="w-20 h-20 text-yellow-500 mx-auto" />
-          <h2 className="text-2xl font-bold text-white">Exam Complete!</h2>
-          <p className="text-5xl font-black text-accent-400">{finalScore?.score || 0}%</p>
-          <p className="text-primary-300">{finalScore?.correct} / {finalScore?.total} correct</p>
-          <p className="text-primary-400 font-medium flex items-center justify-center gap-2"><Clock className="w-4 h-4" /> Time Taken: {formatTime(timer)}</p>
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Exam Complete!</h2>
+          <p className="text-5xl font-black text-emerald-500 dark:text-accent-400">{finalScore?.score || 0}%</p>
+          <p className="text-slate-600 dark:text-primary-300">{finalScore?.correct} / {finalScore?.total} correct</p>
+          <p className="text-slate-500 dark:text-primary-400 font-medium flex items-center justify-center gap-2"><Clock className="w-4 h-4" /> Time Taken: {formatTime(timer)}</p>
           <div className="flex gap-4 justify-center">
-            <button onClick={() => setView('menu')} className="bg-white/10 text-white px-8 py-3 rounded-xl font-semibold">Back to Menu</button>
+            <button onClick={() => setView('menu')} className="bg-slate-200 hover:bg-slate-300 dark:bg-white/10 text-slate-700 dark:text-white px-8 py-3 rounded-xl font-semibold transition-colors">Back to Menu</button>
             <button onClick={handleExportResults} disabled={exporting} className="btn-glow bg-primary-600 text-white px-8 py-3 rounded-xl font-bold flex gap-2">
               {exporting ? <Loader2 className="w-5 h-5 animate-spin" /> : <FileText className="w-5 h-5" />} Download PDF
             </button>
@@ -301,12 +301,12 @@ export default function MockTest() {
       {/* Top bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between glass-card p-4 gap-4">
         <div className="flex items-center gap-3">
-          <Target className="w-5 h-5 text-accent-400" />
-          <span className="text-lg font-bold text-white">Mock Exam</span>
-          <span className="text-sm bg-white/10 px-2 py-1 rounded-lg text-primary-300">{currentIdx + 1}/{questions.length}</span>
+          <Target className="w-5 h-5 text-emerald-500 dark:text-accent-400" />
+          <span className="text-lg font-bold text-slate-800 dark:text-white">Mock Exam</span>
+          <span className="text-sm bg-slate-100 dark:bg-white/10 px-2 py-1 rounded-lg text-slate-600 dark:text-primary-300">{currentIdx + 1}/{questions.length}</span>
         </div>
         <div className="flex items-center gap-4">
-          <div className={`px-4 py-2 rounded-xl font-mono font-bold text-lg border flex items-center gap-2 ${countdown < 300 ? 'bg-red-500/20 border-red-500 text-red-500' : 'bg-white/5 border-white/10 text-primary-300'}`}>
+          <div className={`px-4 py-2 rounded-xl font-mono font-bold text-lg border flex items-center gap-2 ${countdown < 300 ? 'bg-red-50 dark:bg-red-500/20 border-red-500 text-red-500' : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-primary-300'}`}>
             <Timer className="w-5 h-5" /> {formatCountdown(countdown)}
           </div>
           <button onClick={() => { if(window.confirm('Finish now?')) finishTest() }} className="bg-success-600 hover:bg-success-500 text-white px-5 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
@@ -330,9 +330,9 @@ export default function MockTest() {
         />
       )}
 
-      <div className="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/10">
-        <button onClick={() => setCurrentIdx(Math.max(0, currentIdx - 1))} disabled={currentIdx === 0} className="flex items-center gap-2 text-primary-300 hover:text-white disabled:opacity-30"><ChevronLeft className="w-5 h-5" /> Previous</button>
-        <button onClick={() => setCurrentIdx(Math.min(questions.length - 1, currentIdx + 1))} disabled={currentIdx === questions.length - 1 || (!results[currentQ?.mtq_id] && !results[currentQ?.mtq_id])} className="btn-glow bg-primary-600 text-white px-8 py-2 rounded-lg font-bold disabled:opacity-50 flex items-center gap-2">
+      <div className="flex justify-between items-center bg-white dark:bg-white/5 p-4 rounded-xl border border-slate-200 dark:border-white/10">
+        <button onClick={() => setCurrentIdx(Math.max(0, currentIdx - 1))} disabled={currentIdx === 0} className="flex items-center gap-2 text-slate-500 dark:text-primary-300 hover:text-slate-800 dark:hover:text-white disabled:opacity-30"><ChevronLeft className="w-5 h-5" /> Previous</button>
+        <button onClick={() => setCurrentIdx(Math.min(questions.length - 1, currentIdx + 1))} disabled={currentIdx === questions.length - 1 || (!results[currentQ?.mtq_id] && !results[currentQ?.mtq_id])} className="cute-button-primary px-8 py-2 rounded-lg font-bold disabled:opacity-50 flex items-center gap-2">
           Next <ChevronRight className="w-5 h-5" />
         </button>
       </div>

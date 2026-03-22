@@ -154,7 +154,8 @@ async function initDatabase() {
       { table: 'users', column: 'last_active_date', type: 'TEXT' },
       { table: 'roadmap', column: 'roadmap_name', type: "TEXT DEFAULT 'Standard Roadmap'" },
       { table: 'roadmap', column: 'theory_content', type: 'TEXT' },
-      { table: 'practice_questions', column: 'roadmap_id', type: 'INTEGER' }
+      { table: 'practice_questions', column: 'roadmap_id', type: 'INTEGER' },
+      { table: 'practice_questions', column: 'transcript', type: 'TEXT' }
     ];
 
     for (const m of migrationChecks) {

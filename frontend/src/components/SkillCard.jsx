@@ -15,13 +15,13 @@ export default function SkillCard({ skill: skillId }) {
   return (
     <Link
       to={skill.id === 'grammar' ? '/grammar' : `/practice/${skill.id}`}
-      className="glass-card p-6 flex flex-col items-center text-center group cursor-pointer"
+      className="glass-card skill-card-mochi p-6 flex flex-col items-center text-center group cursor-pointer"
     >
       <div className={`w-16 h-16 rounded-2xl ${skill.color} flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform`}>
         {skill.icon}
       </div>
-      <h3 className="text-lg font-bold text-white mb-1">{skill.label}</h3>
-      <p className="text-sm text-primary-300">{skill.desc}</p>
+      <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">{skill.label}</h3>
+      <p className="text-sm text-slate-500 dark:text-primary-300">{skill.desc}</p>
     </Link>
   )
 }

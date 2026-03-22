@@ -80,11 +80,11 @@ export default function Roadmap() {
     <div className="animate-fade-in space-y-6">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-            <Map className="w-8 h-8 text-primary-400" />
+          <h1 className="text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
+            <Map className="w-8 h-8 text-emerald-500 dark:text-primary-400" />
             {activeRoadmap}
           </h1>
-          <p className="text-primary-300 mt-1">Personalized strategy for your APTIS goal</p>
+          <p className="text-slate-500 dark:text-primary-300 mt-1">Personalized strategy for your APTIS goal</p>
         </div>
         {/* Roadmap Selector & Cert Button */}
         <div className="flex flex-col items-end gap-3 w-full md:w-auto">
@@ -100,14 +100,14 @@ export default function Roadmap() {
           
           {roadmapNames.length > 1 && (
             <div className="flex flex-col gap-2 w-full md:w-auto">
-              <label className="text-xs font-semibold text-primary-400 uppercase tracking-wider text-right">Select Roadmap</label>
+              <label className="text-xs font-semibold text-slate-500 dark:text-primary-400 uppercase tracking-wider text-right">Select Roadmap</label>
               <select 
                 value={activeRoadmap}
                 onChange={(e) => setActiveRoadmap(e.target.value)}
-                className="bg-white/10 border border-white/20 text-white rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="bg-slate-50 dark:bg-white/10 border border-slate-200 dark:border-white/20 text-slate-800 dark:text-white rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-primary-500"
               >
                 {roadmapNames.map(name => (
-                  <option key={name} value={name} className="bg-slate-900">{name}</option>
+                  <option key={name} value={name} className="bg-white dark:bg-slate-900">{name}</option>
                 ))}
               </select>
             </div>
@@ -125,11 +125,11 @@ export default function Roadmap() {
               onClick={() => setActiveStage(stage)}
               className={`px-5 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
                 activeStage === stage
-                  ? `bg-gradient-to-r ${STAGE_COLORS[stage] || 'from-primary-600 to-accent-600'} text-white shadow-lg`
-                  : 'bg-white/10 text-primary-300 hover:bg-white/15'
+                  ? `bg-green-500 dark:bg-gradient-to-r dark:${STAGE_COLORS[stage] || 'from-primary-600 to-accent-600'} text-white shadow-lg`
+                  : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-primary-300 hover:bg-slate-200 dark:hover:bg-white/15'
               }`}
             >
-              {stage} <span className="text-xs opacity-75 bg-black/20 px-2 py-0.5 rounded-md">{prog.done}/{prog.total}</span>
+              {stage} <span className="text-xs opacity-75 bg-black/10 dark:bg-black/20 px-2 py-0.5 rounded-md">{prog.done}/{prog.total}</span>
             </button>
           )
         })}
@@ -141,13 +141,13 @@ export default function Roadmap() {
         if (prog.total === 0) return null;
         return (
           <div className="glass-card p-4">
-            <div className="flex justify-between text-sm text-primary-300 mb-2 font-medium">
+            <div className="flex justify-between text-sm text-slate-600 dark:text-primary-300 mb-2 font-medium">
               <span>{activeStage} Stage Progress</span>
               <span>{prog.done}/{prog.total} sessions completed ({prog.pct}%)</span>
             </div>
-            <div className="w-full bg-white/10 rounded-full h-3">
+            <div className="w-full bg-slate-100 dark:bg-white/10 rounded-full h-3">
               <div
-                className={`bg-gradient-to-r ${STAGE_COLORS[activeStage] || 'from-primary-600 to-accent-600'} h-3 rounded-full transition-all`}
+                className={`bg-green-500 dark:bg-gradient-to-r dark:${STAGE_COLORS[activeStage] || 'from-primary-600 to-accent-600'} h-3 rounded-full transition-all`}
                 style={{ width: `${prog.pct}%` }}
               />
             </div>
@@ -190,19 +190,19 @@ export default function Roadmap() {
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <span className="text-primary-400 bg-white/5 p-1.5 rounded-lg">
+                      <span className="text-emerald-500 dark:text-primary-400 bg-emerald-50 dark:bg-white/5 p-1.5 rounded-lg">
                         {getSkillIcon(session.skill)}
                       </span>
-                      <h3 className="font-bold text-white text-lg">{session.title}</h3>
+                      <h3 className="font-bold text-slate-800 dark:text-white text-lg">{session.title}</h3>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                        activeStage === 'A1-A2' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-primary-500/20 text-primary-400'
+                        activeStage === 'A1-A2' ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-primary-100 dark:bg-primary-500/20 text-primary-600 dark:text-primary-400'
                       }`}>
                         {activeStage}
                       </span>
                     </div>
-                    <p className="text-primary-300 text-sm mb-3 mt-2">{session.description}</p>
+                    <p className="text-slate-600 dark:text-primary-300 text-sm mb-3 mt-2">{session.description}</p>
                     {session.objectives && (
-                      <div className="flex items-start gap-1.5 text-primary-400 text-xs bg-black/20 p-2 rounded-lg inline-block">
+                      <div className="flex items-start gap-1.5 text-emerald-600 dark:text-primary-400 text-xs bg-emerald-50 dark:bg-black/20 p-2 rounded-lg inline-block">
                         <Target className="w-3.5 h-3.5 inline-block -mt-0.5" /> <span className="font-medium italic">{session.objectives}</span>
                       </div>
                     )}
@@ -211,11 +211,11 @@ export default function Roadmap() {
                   {/* Action Button */}
                   <div className="flex-shrink-0 self-center">
                     {isDone ? (
-                      <span className="text-success-400 font-semibold text-sm flex items-center gap-1">
+                      <span className="text-emerald-500 dark:text-success-400 font-semibold text-sm flex items-center gap-1">
                         <Check className="w-4 h-4" /> Completed
                       </span>
                     ) : isLocked ? (
-                      <span className="text-primary-500 text-sm flex items-center gap-1">
+                      <span className="text-slate-400 dark:text-primary-500 text-sm flex items-center gap-1">
                         <Lock className="w-4 h-4" /> Locked
                       </span>
                     ) : (

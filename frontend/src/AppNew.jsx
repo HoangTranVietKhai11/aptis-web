@@ -15,13 +15,19 @@ import Progress from './pages/Progress'
 import Leaderboard from './pages/Leaderboard'
 import AdminPanel from './pages/AdminPanel'
 import GrammarTenses from './pages/GrammarTenses'
+import ListeningTest from './pages/ListeningTest'
 
 function App() {
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark')
+  const [theme, setTheme] = useState(localStorage.getItem('app_theme_mochi') || 'light')
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('theme', theme)
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+    localStorage.setItem('app_theme_mochi', theme)
   }, [theme])
 
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark')
@@ -30,7 +36,7 @@ function App() {
     <AuthProvider>
       <Toaster position="top-center" toastOptions={{ style: { background: '#1e293b', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' } }} />
       <BrowserRouter>
-        <div className="min-h-screen bg-slate-900/10">
+        <div className="min-h-screen bg-transparent transition-colors duration-300">
           <Navbar toggleTheme={toggleTheme} theme={theme} />
           <main className="max-w-5xl mx-auto px-4 pb-8 pt-4">
             <Routes>
@@ -41,6 +47,7 @@ function App() {
               <Route path="/practice" element={<Practice />} />
               <Route path="/practice/:skill" element={<Practice />} />
               <Route path="/mocktest" element={<MockTest />} />
+              <Route path="/listening" element={<ListeningTest />} />
               <Route path="/vocabulary" element={<Vocabulary />} />
               <Route path="/vocab-game" element={<VocabGame />} />
               <Route path="/flashcards" element={<Flashcards />} />

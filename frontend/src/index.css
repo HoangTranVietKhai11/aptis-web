@@ -9,27 +9,38 @@
 }
 
 :root {
-  --bg-gradient: linear-gradient(135deg, #09090b 0%, #17171e 100%);
-  --bg-primary: #09090b;
-  --text-primary: #e2e8f0;
+  /* Default to Mochi-style Light Theme */
+  --bg-gradient: #f9fdfa; /* Very subtle mint/off-white background */
+  --bg-primary: #f9fdfa;
+  --text-primary: #374151; /* Dark gray text */
+  --text-secondary: #6b7280;
+  --glass-bg: #ffffff; /* Solid white cards */
+  --glass-border: #e5e7eb;
+  --primary-glow: rgba(34, 197, 94, 0.2); /* Green glow */
+}
+
+[data-theme='dark'] {
+  --bg-gradient: #1e293b;
+  --bg-primary: #1e293b;
+  --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --primary-glow: rgba(99, 102, 241, 0.15);
+  --glass-bg: #334155;
+  --glass-border: #475569;
+  --primary-glow: rgba(34, 197, 94, 0.1);
 }
 
 [data-theme='light'] {
-  --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  --bg-primary: #f8fafc;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(15, 23, 42, 0.1);
-  --primary-glow: rgba(99, 102, 241, 0.05);
+  --bg-gradient: #f9fdfa;
+  --bg-primary: #f9fdfa;
+  --text-primary: #374151;
+  --text-secondary: #6b7280;
+  --glass-bg: #ffffff;
+  --glass-border: #e5e7eb;
+  --primary-glow: rgba(34, 197, 94, 0.2);
 }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Quicksand', 'Inter', system-ui, sans-serif; /* Quicksand is rounder/cuter */
   background: var(--bg-gradient);
   background-attachment: fixed;
   min-height: 100vh;
@@ -37,27 +48,34 @@ body {
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* Glassmorphism card */
+/* Mochi-style Card (replaces glass-card) */
 .glass-card {
   background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 1rem;
-  transition: all 0.3s ease;
+  border: 2px solid var(--glass-border);
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03), 0 8px 0 rgba(0,0,0,0.02); /* Subtle 3D lift */
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .glass-card:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05), 0 8px 0 rgba(0,0,0,0.02);
 }
 
-/* Skill badges */
-.skill-grammar { background: linear-gradient(135deg, #6366f1, #818cf8); }
-.skill-reading { background: linear-gradient(135deg, #22c55e, #4ade80); }
-.skill-listening { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
-.skill-writing { background: linear-gradient(135deg, #d946ef, #f0abfc); }
-.skill-speaking { background: linear-gradient(135deg, #ef4444, #f87171); }
+/* Skill badges - Mochi Pastel 3D Edition */
+.skill-grammar { background: #fee2e2; color: #ef4444; border: 2px solid #fecaca; box-shadow: 0 4px 0 #fca5a5; } 
+.skill-reading { background: #dcfce7; color: #22c55e; border: 2px solid #bbf7d0; box-shadow: 0 4px 0 #86efac; }
+.skill-listening { background: #fef9c3; color: #eab308; border: 2px solid #fef08a; box-shadow: 0 4px 0 #fde047; }
+.skill-writing { background: #e0e7ff; color: #6366f1; border: 2px solid #c7d2fe; box-shadow: 0 4px 0 #a5b4fc; }
+.skill-speaking { background: #ffedd5; color: #f97316; border: 2px solid #fed7aa; box-shadow: 0 4px 0 #fdba74; }
+
+.skill-card-mochi {
+  border-radius: 1.5rem;
+  transition: all 0.2s ease;
+}
+.skill-card-mochi:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 transparent;
+}
 
 /* Button glow */
 .btn-glow {
@@ -78,6 +96,58 @@ body {
 }
 .btn-glow:hover::after {
   opacity: 1;
+}
+
+/* Cute UI aesthetics for Speaking section */
+.cute-card {
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 2rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+  transition: all 0.3s ease;
+}
+[data-theme='dark'] .cute-card {
+  background: #1e293b;
+  border: 2px solid #334155;
+}
+
+/* Mochi-style Vibrant Green Primary Button */
+.cute-button-primary {
+  background: #22c55e; /* Bright vibrant green */
+  color: white;
+  border-radius: 100px; /* Fully rounded */
+  font-weight: 800;
+  box-shadow: 0 6px 0 #16a34a; /* 3D bottom border */
+  transition: all 0.1s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.cute-button-primary:hover {
+  transform: translateY(2px);
+  box-shadow: 0 4px 0 #16a34a;
+  background: #25d366;
+}
+.cute-button-primary:active {
+  transform: translateY(6px);
+  box-shadow: 0 0 0 transparent;
+}
+
+.cute-recording-indicator {
+  position: relative;
+}
+.cute-recording-indicator::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: #22c55e;
+  opacity: 0.2;
+  animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  100% { transform: scale(1.5); opacity: 0; }
 }
 
 /* Scrollbar */

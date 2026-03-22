@@ -115,6 +115,9 @@ export const askAiTutor = (data) =>
 export const getAiAnalysis = () =>
   fetchJSON('/ai/analyze', { method: 'POST', body: JSON.stringify({}) });
 
+export const generateAiPractice = (skill, difficulty, limit = 20) =>
+  fetchJSON('/ai/generate-practice', { method: 'POST', body: JSON.stringify({ skill, difficulty, limit }) });
+
 export const getDailyStats = () => fetchJSON('/progress/stats');
 
 // ─── Import ──────────────────────────────────────────────────────────────────

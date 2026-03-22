@@ -164,25 +164,25 @@ export default function Vocabulary() {
 
   return (
     <div className="animate-fade-in space-y-6">
-      <h1 className="text-3xl font-bold text-white">Vocabulary</h1>
+      <h1 className="text-3xl font-bold text-slate-800 dark:text-white">Vocabulary</h1>
 
       {/* Tabs */}
       <div className="flex gap-2 flex-wrap">
         <button
           onClick={() => setTab('library')}
-          className={`px-5 py-3 rounded-xl font-semibold text-lg transition-all flex items-center gap-2 ${tab === 'library' ? 'bg-primary-600 text-white shadow-lg' : 'bg-white/5 text-primary-300 hover:bg-white/10'}`}
+          className={`px-5 py-3 rounded-xl font-semibold text-lg transition-all flex items-center gap-2 ${tab === 'library' ? 'bg-emerald-500 dark:bg-primary-600 text-white shadow-lg' : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-primary-300 hover:bg-slate-200 dark:hover:bg-white/10'}`}
         >
           <Library className="w-5 h-5" /> Word Library ({words.length})
         </button>
         <button
           onClick={() => setTab('notebook')}
-          className={`px-5 py-3 rounded-xl font-semibold text-lg transition-all flex items-center gap-2 ${tab === 'notebook' ? 'bg-primary-600 text-white shadow-lg' : 'bg-white/5 text-primary-300 hover:bg-white/10'}`}
+          className={`px-5 py-3 rounded-xl font-semibold text-lg transition-all flex items-center gap-2 ${tab === 'notebook' ? 'bg-emerald-500 dark:bg-primary-600 text-white shadow-lg' : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-primary-300 hover:bg-slate-200 dark:hover:bg-white/10'}`}
         >
           <PenTool className="w-5 h-5" /> My Notebook ({notebook.length})
         </button>
         <button
           onClick={() => { setShowImport(!showImport); setImportStatus(null); setImportError(null) }}
-          className={`px-5 py-3 rounded-xl font-semibold text-lg transition-all flex items-center gap-2 ${showImport ? 'bg-accent-600 text-white shadow-lg' : 'bg-white/5 text-primary-300 hover:bg-white/10'}`}
+          className={`px-5 py-3 rounded-xl font-semibold text-lg transition-all flex items-center gap-2 ${showImport ? 'bg-emerald-600 dark:bg-accent-600 text-white shadow-lg' : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-primary-300 hover:bg-slate-200 dark:hover:bg-white/10'}`}
         >
           <Upload className="w-5 h-5" /> Import CSV
         </button>
@@ -197,16 +197,16 @@ export default function Vocabulary() {
               placeholder="Search words..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="flex-1 min-w-[180px] bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-primary-300/50 focus:outline-none focus:border-primary-400"
+              className="flex-1 min-w-[180px] bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-primary-300/50 focus:outline-none focus:border-emerald-500 dark:focus:border-primary-400"
             />
             <select
               value={selectedTheme}
               onChange={e => setSelectedTheme(e.target.value)}
-              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary-400"
+              className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-primary-400"
             >
-              <option value="" className="bg-slate-900">All Themes</option>
+              <option value="" className="bg-white dark:bg-slate-900">All Themes</option>
               {(THEMES || []).map(t => (
-                <option key={t} value={t} className="bg-slate-900">
+                <option key={t} value={t} className="bg-white dark:bg-slate-900">
                   {t}
                 </option>
               ))}
@@ -215,19 +215,19 @@ export default function Vocabulary() {
         )}
         <button
           onClick={() => setShowAdd(!showAdd)}
-          className="btn-glow bg-white/10 hover:bg-white/15 text-white px-6 py-3 rounded-xl font-semibold"
+          className="btn-glow bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/15 text-slate-800 dark:text-white px-6 py-3 rounded-xl font-semibold transition-colors"
         >
           {showAdd ? 'Cancel' : '+ Add Word'}
         </button>
         <Link
           to="/vocab-game"
-          className="bg-accent-600/20 hover:bg-accent-600/40 border border-accent-500/30 text-accent-300 px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all"
+          className="bg-emerald-50 dark:bg-accent-600/20 hover:bg-emerald-100 dark:hover:bg-accent-600/40 border border-emerald-200 dark:border-accent-500/30 text-emerald-600 dark:text-accent-300 px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all"
         >
           <Gamepad2 className="w-5 h-5" /> Minigame
         </Link>
         <Link
           to="/flashcards"
-          className="btn-glow bg-gradient-to-r from-accent-600 to-primary-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 shadow-lg"
+          className="cute-button-primary px-6 py-3 rounded-xl font-semibold flex items-center gap-2"
         >
           <Layers className="w-5 h-5" /> Flashcards
         </Link>
@@ -250,13 +250,13 @@ export default function Vocabulary() {
           {importError && <p className="text-red-400 text-sm">{importError}</p>}
 
           <div>
-            <label className="text-primary-300 text-sm font-semibold block mb-1">Set Name *</label>
+            <label className="text-slate-600 dark:text-primary-300 text-sm font-semibold block mb-1">Set Name *</label>
             <input
               type="text"
               placeholder="e.g. IELTS Vocabulary Week 1, Business English..."
               value={importSetName}
               onChange={e => setImportSetName(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-primary-300/50 focus:outline-none focus:border-accent-400"
+              className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-primary-300/50 focus:outline-none focus:border-emerald-500 dark:focus:border-accent-400"
             />
           </div>
 
@@ -325,23 +325,23 @@ export default function Vocabulary() {
         <div className="glass-card p-5 space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input placeholder="Word *" value={newWord.word} onChange={e => setNewWord({ ...newWord, word: e.target.value })}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-primary-300/50 focus:outline-none focus:border-primary-400" />
+              className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-4 py-3 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-primary-300/50 focus:outline-none focus:border-emerald-500 dark:focus:border-primary-400" />
             <input placeholder="Part of speech (noun, verb...)" value={newWord.part_of_speech} onChange={e => setNewWord({ ...newWord, part_of_speech: e.target.value })}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-primary-300/50 focus:outline-none focus:border-primary-400" />
+              className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-4 py-3 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-primary-300/50 focus:outline-none focus:border-emerald-500 dark:focus:border-primary-400" />
           </div>
           <input placeholder="Definition" value={newWord.definition} onChange={e => setNewWord({ ...newWord, definition: e.target.value })}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-primary-300/50 focus:outline-none focus:border-primary-400" />
+            className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-4 py-3 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-primary-300/50 focus:outline-none focus:border-emerald-500 dark:focus:border-primary-400" />
           <input placeholder="Example sentence" value={newWord.example_sentence} onChange={e => setNewWord({ ...newWord, example_sentence: e.target.value })}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-primary-300/50 focus:outline-none focus:border-primary-400" />
+            className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-4 py-3 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-primary-300/50 focus:outline-none focus:border-emerald-500 dark:focus:border-primary-400" />
           <select value={String(newWord.theme)} onChange={e => setNewWord({ ...newWord, theme: e.target.value })}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary-400">
-            {(THEMES || []).map(t => <option key={String(t)} value={String(t)} className="bg-slate-900">{String(t)}</option>)}
+            className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-4 py-3 text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-primary-400">
+            {(THEMES || []).map(t => <option key={String(t)} value={String(t)} className="bg-white dark:bg-slate-900">{String(t)}</option>)}
           </select>
           <div className="flex gap-3">
-            <button onClick={handleAddWord} className="bg-success-500 hover:bg-success-400 text-white px-6 py-2 rounded-lg font-semibold flex items-center gap-2">
+            <button onClick={handleAddWord} className="cute-button-primary px-6 py-2 rounded-lg font-semibold flex items-center gap-2">
               <Check className="w-4 h-4" /> Save
             </button>
-            <button onClick={() => setShowAdd(false)} className="bg-white/10 hover:bg-white/15 text-white px-6 py-2 rounded-lg">Cancel</button>
+            <button onClick={() => setShowAdd(false)} className="bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/15 text-slate-700 dark:text-white px-6 py-2 rounded-lg transition-colors">Cancel</button>
           </div>
         </div>
       )}
@@ -364,36 +364,36 @@ export default function Vocabulary() {
             <div key={w.id} className="glass-card p-4 flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex-1">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <h3 className="text-lg font-bold text-white">{w.word}</h3>
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-white">{w.word}</h3>
                   <button
                     onClick={() => speak(w.word)}
-                    className="text-primary-400 hover:text-accent-400 transition-colors"
+                    className="text-emerald-500 dark:text-primary-400 hover:text-emerald-600 dark:hover:text-accent-400 transition-colors"
                     title="Nghe phát âm"
                   >
                     <Volume2 className="w-4 h-4" />
                   </button>
                   {w.part_of_speech && (
-                    <span className="text-xs bg-primary-600/30 text-primary-300 px-2 py-0.5 rounded-full">{w.part_of_speech}</span>
+                    <span className="text-xs bg-emerald-100 dark:bg-primary-600/30 text-emerald-700 dark:text-primary-300 px-2 py-0.5 rounded-full">{w.part_of_speech}</span>
                   )}
                   {w.theme && (
-                    <span className="text-xs bg-accent-600/20 text-accent-400 px-2 py-0.5 rounded-full">{w.theme}</span>
+                    <span className="text-xs bg-indigo-100 dark:bg-accent-600/20 text-indigo-600 dark:text-accent-400 px-2 py-0.5 rounded-full">{w.theme}</span>
                   )}
                   {w.mastery !== undefined && (
-                    <span className="text-xs bg-success-500/20 text-success-400 px-2 py-0.5 rounded-full">Level {w.level || 1}</span>
+                    <span className="text-xs bg-emerald-100 dark:bg-success-500/20 text-emerald-600 dark:text-success-400 px-2 py-0.5 rounded-full">Level {w.level || 1}</span>
                   )}
                 </div>
-                {w.definition && <p className="text-primary-200 text-sm">{w.definition}</p>}
-                {w.example_sentence && <p className="text-primary-300 text-sm italic mt-1">"{w.example_sentence}"</p>}
+                {w.definition && <p className="text-slate-600 dark:text-primary-200 text-sm">{w.definition}</p>}
+                {w.example_sentence && <p className="text-slate-500 dark:text-primary-300 text-sm italic mt-1">"{w.example_sentence}"</p>}
               </div>
               <div className="flex gap-2 shrink-0">
                 {tab === 'library' && (
                   <button onClick={() => handleSaveToNotebook(w)}
-                    className="bg-accent-600/30 hover:bg-accent-600/50 text-accent-300 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                    className="bg-purple-100 dark:bg-accent-600/30 hover:bg-purple-200 dark:hover:bg-accent-600/50 text-purple-700 dark:text-accent-300 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                     + Notebook
                   </button>
                 )}
                 <button onClick={() => handleDelete(w.id)}
-                  className="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-3 py-2 rounded-lg text-sm transition-colors flex items-center justify-center">
+                  className="bg-red-100 dark:bg-red-500/20 hover:bg-red-200 dark:hover:bg-red-500/30 text-red-600 dark:text-red-400 px-3 py-2 rounded-lg text-sm transition-colors flex items-center justify-center">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>

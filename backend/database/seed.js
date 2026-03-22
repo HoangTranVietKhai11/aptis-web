@@ -122,6 +122,24 @@ function seedDatabase(db) {
     { q: '[Speaking Part 2 - Describe a Photo]\nLook at this description and respond:\n\n[Imagine a photo of a busy city street with people walking, shops open, and buses passing]\n\nDescribe what you see and answer: "What time of day do you think this is? Why?" (Speak for 45 seconds)', diff: 'B1', part: 2, session: 9 },
     { q: '[Speaking Part 3 - Compare Photos]\nCompare these two situations:\n\nSituation A: A person studying alone at home.\nSituation B: A group of students studying together in a library.\n\n"Which method do you think is more effective for studying? Give reasons." (Speak for 45 seconds)', diff: 'B1', part: 3, session: 11 },
     { q: '[Speaking Part 4 - Abstract Topic Discussion]\nYou have 1 minute to prepare and 2 minutes to speak:\n\nTopic: "Technology has made the world a better place."\n\nDiscuss this topic. Consider both sides and give your own opinion with examples.', diff: 'B2', part: 4, session: 17 },
+
+    // Additional A1-A2 & B1-B2 Full Exam Practice sets
+    { q: '[Speaking Part 1] Answer this question in 20-30 seconds:\n\n"Please tell me about your favourite food and why you like it."', diff: 'A1', part: 1, session: 2 },
+    { q: '[Speaking Part 1] Answer this question in 20-30 seconds:\n\n"Describe the best holiday you have ever had."', diff: 'A2', part: 1, session: 3 },
+    { q: '[Speaking Part 1] Answer this question in 20-30 seconds:\n\n"What kind of weather do you prefer and what do you do in that weather?"', diff: 'A2', part: 1, session: 5 },
+    { q: '[Speaking Part 1] Answer this question in 20-30 seconds:\n\n"Please tell me about your typical daily routine."', diff: 'A1', part: 1, session: 6 },
+    { q: '[Speaking Part 1] Answer this question in 20-30 seconds:\n\n"What is your dream job and why?"', diff: 'A2', part: 1, session: 7 },
+    { q: '[Speaking Part 1] Answer this question in 20-30 seconds:\n\n"How do you usually travel to work or school?"', diff: 'A2', part: 1, session: 8 },
+
+    { q: '[Speaking Part 2] Look at this description and respond:\n\n[Imagine a photo of people shopping in a crowded outdoor market]\n\nDescribe what you see. Then answer: "Do you prefer shopping in a local market or a large modern mall? Why?" (Speak for 45 seconds)', diff: 'B1', part: 2, session: 10 },
+    { q: '[Speaking Part 2] Look at this description and respond:\n\n[Imagine a photo of a team of people working together in a modern office]\n\nDescribe what the people are doing. Then answer: "Is it important to have a good relationship with your colleagues? Why?" (Speak for 45 seconds)', diff: 'B1', part: 2, session: 12 },
+
+    { q: '[Speaking Part 3] Compare these two situations:\n\nSituation A: A traditional classroom with a teacher at the front.\nSituation B: A student studying alone online at home.\n\n"What are the advantages of each method? Which method do you think is better for teenagers?" (Speak for 45 seconds)', diff: 'B2', part: 3, session: 15 },
+    { q: '[Speaking Part 3] Compare these two situations:\n\nSituation A: People exercising indoors at a crowded gym.\nSituation B: Someone jogging alone in a beautiful park.\n\n"What are the benefits of each? Which environment do you prefer for staying healthy?" (Speak for 45 seconds)', diff: 'B2', part: 3, session: 18 },
+
+    { q: '[Speaking Part 4] You have 1 minute to prepare and 2 minutes to speak:\n\nTopic: "Social media isolates people rather than connecting them."\n\nDiscuss how you feel about this statement. Give your opinion with reasons and examples.', diff: 'B2', part: 4, session: 20 },
+    { q: '[Speaking Part 4] You have 1 minute to prepare and 2 minutes to speak:\n\nTopic: "Fast food is responsible for the decline in public health and should be heavily taxed."\n\nDo you agree or disagree with this statement? Explain your reasons.', diff: 'B2', part: 4, session: 22 },
+    { q: '[Speaking Part 4] You have 1 minute to prepare and 2 minutes to speak:\n\nTopic: "Learning a foreign language is no longer necessary because of translation apps."\n\nDiscuss this topic. Do you agree or disagree? Provide examples.', diff: 'B2', part: 4, session: 25 }
   ];
   for (const s of speakingQs) insertQ.run('speaking', 'audio_response', s.q, null, null, null, s.diff, s.part, s.session);
 
