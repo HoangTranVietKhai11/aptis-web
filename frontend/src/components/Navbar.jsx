@@ -1,11 +1,12 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Disclosure, Transition } from '@headlessui/react'
-import { Home, Map as MapIcon, PenTool, Target, BookOpen, Layers, BarChart, Shield, Sun, Moon, Flame, Star, Menu, X, Headphones } from 'lucide-react'
+import { Home, Map as MapIcon, PenTool, Target, BookOpen, Layers, BarChart, Shield, Sun, Moon, Flame, Star, Menu, X, Headphones, Play } from 'lucide-react'
 
 const links = [
   { to: '/', label: 'Home', icon: Home },
   { to: '/roadmap', label: 'Roadmap', icon: MapIcon },
+  { to: '/videos', label: 'Video', icon: Play },
   { to: '/practice', label: 'Practice', icon: PenTool },
   { to: '/mocktest', label: 'Mock Exam', icon: Target },
   { to: '/listening', label: 'Listening', icon: Headphones },

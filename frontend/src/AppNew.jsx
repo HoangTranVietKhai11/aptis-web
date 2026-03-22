@@ -16,6 +16,9 @@ import Leaderboard from './pages/Leaderboard'
 import AdminPanel from './pages/AdminPanel'
 import GrammarTenses from './pages/GrammarTenses'
 import ListeningTest from './pages/ListeningTest'
+import VideoLessons from './pages/VideoLessons'
+import Login from './pages/Login'
+import { PrivateRoute, AdminRoute } from './components/PrivateRoute'
 
 function App() {
   const [theme, setTheme] = useState(localStorage.getItem('app_theme_mochi') || 'light')
@@ -53,7 +56,9 @@ function App() {
               <Route path="/flashcards" element={<Flashcards />} />
               <Route path="/progress" element={<Progress />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
-              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/videos" element={<VideoLessons />} />
+              <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
+              <Route path="/login" element={<Login />} />
             </Routes>
           </main>
         </div>

@@ -45,9 +45,9 @@ router.post('/generate-practice', async (req, res) => {
     for (const q of questions) {
       try {
         const result = await req.db.query(
-          `INSERT INTO practice_questions (skill, type, question, options, correct_answer, explanation, difficulty, part, roadmap_session, transcript)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
-          [q.skill, q.type, q.question, q.options, q.correct_answer, q.explanation, q.difficulty, q.part || 1, null, q.transcript || null]
+          `INSERT INTO practice_questions (skill, type, question, options, correct_answer, explanation, definition_vi, difficulty, part, roadmap_session, transcript)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+          [q.skill, q.type, q.question, q.options, q.correct_answer, q.explanation, q.definition_vi || null, q.difficulty, q.part || 1, null, q.transcript || null]
         );
         const row = result.rows[0];
         inserted.push({

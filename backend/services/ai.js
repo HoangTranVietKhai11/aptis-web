@@ -168,7 +168,7 @@ async function rephraseText(text) {
 async function generatePracticeQuestions(skill, difficulty = 'B1', limit = 20) {
   const skillGuide = {
     grammar: 'Aptis ESOL 2026 Core format: 3-option or 4-option multiple-choice sentence completion. Focus on everyday language. Include 4 options (A, B, C, D).',
-    vocabulary: 'Aptis ESOL 2026 Core format: Synonym matching, collocation, or word definition multiple-choice. Include 4 options (A, B, C, D).',
+    vocabulary: 'Aptis ESOL 2026 Core format: Synonym matching, collocation, or word definition multiple-choice. Include 4 options (A, B, C, D). You MUST also provide a "definition_vi" (Vietnamese translation) for the word being tested.',
     reading: 'Aptis ESOL 2026 format: Part 1 (Sentence comprehension) or Part 2 (Text cohesion) style. Include a short 3-5 sentence text/paragraph in the question, followed by a comprehension gap fill or question. Include 4 options (A, B, C, D).',
     listening: `Aptis ESOL 2026 format (25 questions total, 4 options A, B, C, D). You MUST provide a "transcript" (the audio dialogue/monologue) and a "question" based on it. Generate questions randomly spreading across these 4 parts:
     - Part 1: Information Recognition (Short conversations, specific info like numbers, times, names).
@@ -190,6 +190,7 @@ async function generatePracticeQuestions(skill, difficulty = 'B1', limit = 20) {
     Output a single valid JSON array with exactly ${limit} objects, each with this structure:
     {
 ${skill === 'listening' ? '      "transcript": "A realistic dialogue or monologue transcript for the audio",\n' : ''}      "question": "Full question text",
+      "definition_vi": "Vietnamese translation (only for vocabulary skill, otherwise null)",
 ${isSpeakingOrWriting ? '' : '      "options": ["option A text", "option B text", "option C text", "option D text"],\n      "correct_answer": "The exact text of the correct option",\n      "explanation": "A short clear explanation",\n'}      "difficulty": "${difficulty}",
       "part": <1, 2, 3, or 4 as integer>
     }
@@ -214,6 +215,7 @@ ${isSpeakingOrWriting ? '    - DO NOT include options, correct_answer, or explan
       options: isSpeakingOrWriting ? null : (q.options ? JSON.stringify(q.options) : null),
       correct_answer: isSpeakingOrWriting ? null : q.correct_answer,
       explanation: isSpeakingOrWriting ? null : q.explanation,
+      definition_vi: q.definition_vi || null
     }));
   } catch (error) {
     console.error('[Groq] Generate questions error:', error.message);
@@ -221,4 +223,63 @@ ${isSpeakingOrWriting ? '    - DO NOT include options, correct_answer, or explan
   }
 }
 
-module.exports = { analyzeResponse, parseExamFromText, rephraseText, generatePracticeQuestions };
+/**
+ * Uses AI to generate fresh APTIS-style practice questions based on a specific lesson transcript.
+ */
+async function generateQuestionsFromTranscript(transcript, skill, difficulty = 'B1', limit = 5) {
+  const skillGuide = {
+    grammar: 'Aptis ESOL 2026 Core format: 4-option multiple-choice sentence completion. The sentences MUST be based on the vocabulary or topics discussed in the transcript.',
+    vocabulary: 'Aptis ESOL 2026 Core format: Multiple-choice questions about words or phrases used in the transcript. Include a "definition_vi" field for the Vietnamese translation.',
+    reading: 'Aptis ESOL 2026 format: Use a specific paragraph from the transcript and ask a comprehension question with 4 options.',
+    writing: 'Aptis ESOL 2026 format: Generate a writing prompt (Part 2, 3 or 4) that asks the student to summarize or discuss a point from the transcript.',
+    speaking: 'Aptis ESOL 2026 format: Generate a speaking prompt asking the student to talk about a topic covered in the transcript.'
+  };
+
+  const isSpeakingOrWriting = skill === 'speaking' || skill === 'writing';
+
+  const prompt = `
+    You are an expert APTIS ESOL 2026 test developer. 
+    Analyze the following lesson transcript and generate exactly ${limit} practice questions for the "${skill}" skill.
+    
+    TRANSCRIPT:
+    """
+    ${transcript.substring(0, 5000)}
+    """
+
+    Target level: ${difficulty}.
+    Guidelines for "${skill}": ${skillGuide[skill] || 'Standard APTIS format.'}
+
+    Output a single valid JSON array with exactly ${limit} objects:
+    {
+      "question": "Full question text",
+${isSpeakingOrWriting ? '' : '      "options": ["A", "B", "C", "D"],\n      "correct_answer": "Exact text of correct option",\n      "explanation": "Why this is correct based on the transcript",\n'}      "definition_vi": "Vietnamese translation of the key word/phrase",
+      "difficulty": "${difficulty}",
+      "part": 1
+    }
+
+    Return ONLY the valid JSON array. No extra text.
+  `;
+
+  try {
+    const text = await callGroq(prompt, 3000);
+    const cleanText = text.replace(/```json|```/g, '').trim();
+    const start = cleanText.indexOf('[');
+    const end = cleanText.lastIndexOf(']') + 1;
+    const questions = JSON.parse(cleanText.substring(start, end));
+    
+    return questions.map(q => ({
+      ...q,
+      skill,
+      type: skill === 'speaking' ? 'audio_response' : skill === 'writing' ? 'text_input' : 'multiple_choice',
+      options: isSpeakingOrWriting ? null : (q.options ? JSON.stringify(q.options) : null),
+      correct_answer: isSpeakingOrWriting ? null : q.correct_answer,
+      explanation: isSpeakingOrWriting ? null : q.explanation,
+      definition_vi: q.definition_vi || null
+    }));
+  } catch (error) {
+    console.error('[Groq] Transcript Gen Error:', error.message);
+    throw new Error('Failed to generate questions from transcript');
+  }
+}
+
+module.exports = { analyzeResponse, parseExamFromText, rephraseText, generatePracticeQuestions, generateQuestionsFromTranscript };

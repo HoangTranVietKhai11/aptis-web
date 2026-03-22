@@ -48,6 +48,7 @@ export default function Practice() {
         await saveToNotebook({
           word: "Mistake: " + (q.question.length > 50 ? q.question.substring(0, 50) + "..." : q.question),
           definition: `Expected: ${res.correct_answer}. Explanation: ${res.explanation || 'Review this grammar/vocab point!'}`,
+          definition_vi: q.definition_vi || null,
           example_sentence: q.question,
           notes: `Skill: ${q.skill}. Your wrong answer: ${answer}`,
           set_name: "Mistakes Bank ⚠️"

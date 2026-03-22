@@ -9,8 +9,8 @@ router.get('/', async (req, res) => {
 
   if (search) {
     const idx = queryParams.length + 1;
-    query += ` AND (word LIKE $${idx} OR definition LIKE $${idx + 1})`;
-    queryParams.push(`%${search}%`, `%${search}%`);
+    query += ` AND (word LIKE $${idx} OR definition LIKE $${idx + 1} OR definition_vi LIKE $${idx + 2})`;
+    queryParams.push(`%${search}%`, `%${search}%`, `%${search}%`);
   }
   if (level) {
     const idx = queryParams.length + 1;
@@ -47,15 +47,15 @@ router.get('/themes', async (req, res) => {
 // POST /api/vocabulary
 router.post('/', async (req, res) => {
   try {
-    const { word, definition, example_sentence, part_of_speech, level = 'B2', theme = 'General' } = req.body;
+    const { word, definition, definition_vi, example_sentence, part_of_speech, level = 'B2', theme = 'General' } = req.body;
     if (!word) return res.status(400).json({ error: 'word is required' });
 
     const result = await req.db.query(
-      'INSERT INTO vocabulary (word, definition, example_sentence, part_of_speech, level, theme) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
-      [word, definition, example_sentence, part_of_speech, level, theme]
+      'INSERT INTO vocabulary (word, definition, definition_vi, example_sentence, part_of_speech, level, theme) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
+      [word, definition, definition_vi, example_sentence, part_of_speech, level, theme]
     );
 
-    res.json({ id: result.rows[0].id, word, definition, example_sentence, part_of_speech, level, theme });
+    res.json({ id: result.rows[0].id, word, definition, definition_vi, example_sentence, part_of_speech, level, theme });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -116,9 +116,16 @@ router.post('/import-csv', async (req, res) => {
     for (const row of rows) {
       if (!row.word) continue;
       await req.db.query(
-        `INSERT INTO user_vocabulary (vocabulary_id, word, definition, example_sentence, notes, set_name, mastery, level, next_review_at)
-         VALUES (null, $1, $2, $3, $4, $5, 0, 1, CURRENT_TIMESTAMP)`,
-        [row.word.trim(), (row.definition || '').trim(), (row.example_sentence || '').trim(), (row.notes || '').trim(), set_name.trim()]
+        `INSERT INTO user_vocabulary (vocabulary_id, word, definition, definition_vi, example_sentence, notes, set_name, mastery, level, next_review_at)
+         VALUES (null, $1, $2, $3, $4, $5, $6, 0, 1, CURRENT_TIMESTAMP)`,
+        [
+          row.word.trim(), 
+          (row.definition || '').trim(), 
+          (row.definition_vi || '').trim(), 
+          (row.example_sentence || '').trim(), 
+          (row.notes || '').trim(), 
+          set_name.trim()
+        ]
       );
       imported++;
     }
@@ -164,12 +171,12 @@ router.post('/notebook/:id/review', async (req, res) => {
 // POST /api/vocabulary/notebook
 router.post('/notebook', async (req, res) => {
   try {
-    const { word, definition, example_sentence, notes, vocabulary_id, set_name } = req.body;
+    const { word, definition, definition_vi, example_sentence, notes, vocabulary_id, set_name } = req.body;
     if (!word) return res.status(400).json({ error: 'word is required' });
 
     const result = await req.db.query(
-      'INSERT INTO user_vocabulary (vocabulary_id, word, definition, example_sentence, notes, set_name) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
-      [vocabulary_id || null, word, definition, example_sentence, notes, set_name || null]
+      'INSERT INTO user_vocabulary (vocabulary_id, word, definition, definition_vi, example_sentence, notes, set_name) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
+      [vocabulary_id || null, word, definition, definition_vi, example_sentence, notes, set_name || null]
     );
 
     res.json({ id: result.rows[0].id, word });

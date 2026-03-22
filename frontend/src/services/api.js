@@ -150,3 +150,18 @@ export async function saveToNotebook(data) {
   });
   return res.json();
 }
+
+// ─── Videos ──────────────────────────────────────────────────────────────────
+export const getVideos = () => fetchJSON('/videos');
+export const updateVideoProgress = (id, data) =>
+  fetchJSON(`/videos/${id}/progress`, { method: 'POST', body: JSON.stringify(data) });
+
+export const getVideoNotes = (id) => fetchJSON(`/videos/${id}/notes`);
+export const addVideoNote = (id, data) =>
+  fetchJSON(`/videos/${id}/notes`, { method: 'POST', body: JSON.stringify(data) });
+
+export const updateVideoTranscript = (id, transcript) =>
+  fetchJSON(`/videos/${id}/transcript`, { method: 'PUT', body: JSON.stringify({ transcript }) });
+
+export const generateAIVideoPractice = (id, data) =>
+  fetchJSON(`/videos/${id}/ai-practice`, { method: 'POST', body: JSON.stringify(data) });

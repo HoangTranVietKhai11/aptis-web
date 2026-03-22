@@ -26,6 +26,7 @@ const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const ttsRoutes = require('./routes/tts');
 const listeningRoutes = require('./routes/listening');
+const videoRoutes = require('./routes/videos');
 
 const app = express();
 const PORT = process.env.PORT || 3003;
@@ -78,6 +79,7 @@ async function startServer() {
     app.use('/api/import', importRoutes);
     app.use('/api/tts', ttsRoutes);
     app.use('/api/listening', listeningRoutes);
+    app.use('/api/videos', videoRoutes);
 
     // Health check
     app.get('/api/health', (req, res) => {

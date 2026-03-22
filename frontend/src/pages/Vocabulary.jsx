@@ -43,7 +43,7 @@ export default function Vocabulary() {
   const [search, setSearch] = useState('')
   const [selectedTheme, setSelectedTheme] = useState('')
   const [showAdd, setShowAdd] = useState(false)
-  const [newWord, setNewWord] = useState({ word: '', definition: '', example_sentence: '', part_of_speech: '', theme: 'Work & Career' })
+  const [newWord, setNewWord] = useState({ word: '', definition: '', definition_vi: '', example_sentence: '', part_of_speech: '', theme: 'Work & Career' })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -92,7 +92,7 @@ export default function Vocabulary() {
     } else {
       await apiFetch('/vocabulary/notebook', { method: 'POST', body: JSON.stringify(newWord) })
     }
-    setNewWord({ word: '', definition: '', example_sentence: '', part_of_speech: '', theme: 'Work & Career' })
+    setNewWord({ word: '', definition: '', definition_vi: '', example_sentence: '', part_of_speech: '', theme: 'Work & Career' })
     setShowAdd(false)
     loadAll()
   }
@@ -100,7 +100,7 @@ export default function Vocabulary() {
   const handleSaveToNotebook = async (w) => {
     await apiFetch('/vocabulary/notebook', {
       method: 'POST',
-      body: JSON.stringify({ word: w.word, definition: w.definition, example_sentence: w.example_sentence, vocabulary_id: w.id })
+      body: JSON.stringify({ word: w.word, definition: w.definition, definition_vi: w.definition_vi, example_sentence: w.example_sentence, vocabulary_id: w.id })
     })
     loadAll()
   }
@@ -127,9 +127,10 @@ export default function Vocabulary() {
           : line.split(',')
         const word = parts[0]?.replace(/^"|"$/g, '').trim()
         const definition = parts[1]?.replace(/^"|"$/g, '').trim() || ''
-        const example_sentence = parts[2]?.replace(/^"|"$/g, '').trim() || ''
-        const notes = parts[3]?.replace(/^"|"$/g, '').trim() || ''
-        if (word) rows.push({ word, definition, example_sentence, notes })
+        const definition_vi = parts[2]?.replace(/^"|"$/g, '').trim() || ''
+        const example_sentence = parts[3]?.replace(/^"|"$/g, '').trim() || ''
+        const notes = parts[4]?.replace(/^"|"$/g, '').trim() || ''
+        if (word) rows.push({ word, definition, definition_vi, example_sentence, notes })
       }
       // Remove header row if first word is 'word'
       if (rows.length > 0 && rows[0].word.toLowerCase() === 'word') rows.shift()
@@ -300,6 +301,7 @@ export default function Vocabulary() {
                         <td className="px-3 py-2 text-primary-500">{i + 1}</td>
                         <td className="px-3 py-2 text-white font-medium">{row.word}</td>
                         <td className="px-3 py-2 text-primary-200">{row.definition}</td>
+                        <td className="px-3 py-2 text-primary-400">{row.definition_vi}</td>
                         <td className="px-3 py-2 text-primary-400 italic">{row.example_sentence}</td>
                       </tr>
                     ))}
@@ -329,8 +331,12 @@ export default function Vocabulary() {
             <input placeholder="Part of speech (noun, verb...)" value={newWord.part_of_speech} onChange={e => setNewWord({ ...newWord, part_of_speech: e.target.value })}
               className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-4 py-3 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-primary-300/50 focus:outline-none focus:border-emerald-500 dark:focus:border-primary-400" />
           </div>
-          <input placeholder="Definition" value={newWord.definition} onChange={e => setNewWord({ ...newWord, definition: e.target.value })}
-            className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-4 py-3 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-primary-300/50 focus:outline-none focus:border-emerald-500 dark:focus:border-primary-400" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <input placeholder="Definition (English)" value={newWord.definition} onChange={e => setNewWord({ ...newWord, definition: e.target.value })}
+              className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-4 py-3 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-primary-300/50 focus:outline-none focus:border-emerald-500 dark:focus:border-primary-400" />
+            <input placeholder="Nghĩa tiếng Việt *" value={newWord.definition_vi} onChange={e => setNewWord({ ...newWord, definition_vi: e.target.value })}
+              className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-4 py-3 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-primary-300/50 focus:outline-none focus:border-emerald-500 dark:focus:border-primary-400" />
+          </div>
           <input placeholder="Example sentence" value={newWord.example_sentence} onChange={e => setNewWord({ ...newWord, example_sentence: e.target.value })}
             className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-4 py-3 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-primary-300/50 focus:outline-none focus:border-emerald-500 dark:focus:border-primary-400" />
           <select value={String(newWord.theme)} onChange={e => setNewWord({ ...newWord, theme: e.target.value })}
@@ -383,6 +389,7 @@ export default function Vocabulary() {
                   )}
                 </div>
                 {w.definition && <p className="text-slate-600 dark:text-primary-200 text-sm">{w.definition}</p>}
+                {w.definition_vi && <p className="text-emerald-600 dark:text-primary-400 text-sm font-medium mt-0.5">Vietnamese: {w.definition_vi}</p>}
                 {w.example_sentence && <p className="text-slate-500 dark:text-primary-300 text-sm italic mt-1">"{w.example_sentence}"</p>}
               </div>
               <div className="flex gap-2 shrink-0">

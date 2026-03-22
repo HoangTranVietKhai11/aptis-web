@@ -155,7 +155,14 @@ export default function QuestionCard({ question, onAnswer, showResult, questionI
     return (
       <div className="glass-card p-6 animate-fade-in">
         <div className="flex justify-between items-start mb-4 gap-4">
-          <p className="text-lg font-medium leading-relaxed whitespace-pre-line">{question.question}</p>
+          <div className="flex-1">
+            <p className="text-lg font-medium leading-relaxed whitespace-pre-line">{question.question}</p>
+            {question.definition_vi && (
+              <p className="text-emerald-600 dark:text-primary-400 text-sm font-bold mt-2 flex items-center gap-2">
+                <Smile className="w-4 h-4" /> Nghĩa: {question.definition_vi}
+              </p>
+            )}
+          </div>
           {question.skill === 'listening' && (
             <button
               onClick={isPlaying ? handleStopTTS : handlePlayTTS}
@@ -294,7 +301,14 @@ export default function QuestionCard({ question, onAnswer, showResult, questionI
   return (
     <div className="glass-card p-6 animate-fade-in">
       <div className="flex justify-between items-start mb-6 gap-4">
-        <p className="text-lg font-medium leading-relaxed whitespace-pre-line">{question.question}</p>
+        <div className="flex-1">
+          <p className="text-lg font-medium leading-relaxed whitespace-pre-line">{question.question}</p>
+          {question.definition_vi && (
+            <p className="text-emerald-600 dark:text-primary-400 text-sm font-bold mt-2 flex items-center gap-2">
+              <Smile className="w-4 h-4" /> Nghĩa: {question.definition_vi}
+            </p>
+          )}
+        </div>
         {question.skill === 'listening' && (
           <button
             onClick={isPlaying ? handleStopTTS : handlePlayTTS}
